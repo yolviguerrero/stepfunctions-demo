@@ -1,0 +1,17 @@
+{
+  "Comment": "A sample example of a lambda that receives information from a previous lambda",
+  "StartAt": "getCountry",
+  "States": {
+    "getCountry": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:558355200489:function:getCountry",
+      "InputPath": "$",
+      "Next": "countryGreetings"
+    },
+    "countryGreetings": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:558355200489:function:greetingsCountry",
+      "End": true
+    }
+  }
+}
