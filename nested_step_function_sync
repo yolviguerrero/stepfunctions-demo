@@ -1,0 +1,52 @@
+{
+  "Comment": "An example of a nested step functions that wait for the response",
+  "StartAt": "ValidateAccount",
+  "States": {
+    "ValidateAccount": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::states:startExecution.sync:2",
+      "Parameters": {
+        "StateMachineArn": "arn:aws:states:us-east-1:558355200489:stateMachine:valAccount",
+        "Input": {
+          "accountNo.$": "$.AccountNumber"
+        }
+      },
+      "Next": "Evaluate"
+    },
+    "Evaluate": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.Output.statusCode",
+          "NumericEquals": 200,
+          "Next": "SuccessfulReturnState"
+        },
+        {
+          "Variable": "$.Output.statusCode",
+          "NumericEquals": 400,
+          "Next": "ErrorState"
+        }
+      ],
+      "Default": "DefaultState"
+    },
+    "SuccessfulReturnState": {
+      "Type": "Pass",
+      "Next": "NextState"
+    },
+    "ErrorState": {
+      "Type": "Pass",
+      "Result": "Fail branch",
+      "Next": "NextState"
+    },
+    "DefaultState": {
+      "Type": "Fail",
+      "Error": "DefaultStateError",
+      "Cause": "No matches!"
+    },
+    "NextState": {
+      "Type": "Pass",
+      "Result": "Dummy State",
+      "End": true
+    }
+  }
+}
